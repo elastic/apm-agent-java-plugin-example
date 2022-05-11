@@ -41,8 +41,7 @@ public class ExampleHttpServerInstrumentationIT extends AbstractInstrumentationT
         //Setting this makes the agent startup faster
         String instrumentations = "opentelemetry, "+String.join(", ",
                 new ExampleHttpServerInstrumentation().getInstrumentationGroupNames());
-        //setProperty("elastic.apm.enable_instrumentations", instrumentations);
-
+        setProperty("elastic.apm.enable_instrumentations", instrumentations);
     }
 
     @BeforeAll
