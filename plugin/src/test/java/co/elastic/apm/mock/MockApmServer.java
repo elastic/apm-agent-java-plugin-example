@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 /**
  * This is a server which just accepts lines of JSON code and if the JSON
@@ -56,31 +57,40 @@ public class MockApmServer {
     }
 
     /**
-     * Get's the transaction at index i if it exists within the timeout
-     * specified. If it doesn't exist within the timeout period, an
+     * Gets the transaction at index i if it exists within the timeout
+     * specified, and removes it from the transaction list.
+     * If it doesn't exist within the timeout period, an
      * IllegalArgumentException is thrown
      * @param i - the index to retrieve a transaction from
      * @param timeOutInMillis - millisecond timeout to wait for the
      *                        transaction at index i to exist
      * @return - the transaction information as a JSON object
-     * @throws IllegalArgumentException - thrown if no transaction
-     *                         exists at index i at timeout
+     * @throws TimeoutException - thrown if no transaction
+     *                         exists at index i by timeout
      */
-    public JsonNode getTransaction(int i, long timeOutInMillis) {
+    public JsonNode getAndRemoveTransaction(int i, long timeOutInMillis) throws TimeoutException {
         //because the agent writes to the server asynchronously,
         //any transaction created in a client is not here immediately
         long start = System.currentTimeMillis();
-        while (System.currentTimeMillis() - start < timeOutInMillis) {
+        long elapsedTime = 0;
+        while (elapsedTime < timeOutInMillis) {
             synchronized (transactions) {
                 if (transactions.size() > i) {
                     break;
                 }
+                if (timeOutInMillis-elapsedTime > 0) {
+                    try {
+                        transactions.wait(timeOutInMillis - elapsedTime);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                elapsedTime = System.currentTimeMillis() - start;
             }
-            try {Thread.sleep(1);} catch (InterruptedException e) {e.printStackTrace();}
         }
         synchronized (transactions) {
             if (transactions.size() <= i) {
-                throw new IllegalArgumentException("The apm server does not have a transaction at index " + i);
+                throw new TimeoutException("The apm server does not have a transaction at index " + i);
             }
         }
         synchronized (transactions) {
@@ -152,6 +162,7 @@ public class MockApmServer {
                 if (transactionNode != null) {
                     synchronized (transactions) {
                         transactions.add(transactionNode);
+                        transactions.notify();
                     }
                 }
             } catch (JsonProcessingException e) {

@@ -16,7 +16,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.TimeoutException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
@@ -67,11 +67,11 @@ public class ExampleHttpServerInstrumentationIT extends AbstractInstrumentationT
     }
 
     @Test
-    void testInstrumentationMakes1TransactionPerRequestWithCorrectNaming() throws IOException, InterruptedException {
+    void testInstrumentationMakes1TransactionPerRequestWithCorrectNaming() throws IOException, InterruptedException, TimeoutException {
         Tracer elasticTracer = GlobalOpenTelemetry.get().getTracer("ExampleHttpServer");
         for (String request: List.of("nothing", "nothing?withsomething=true", "nothing#somelink", "nothing#somelink?withsomething=true")) {
             assertEquals(200, executeRequest(request));
-            JsonNode transaction = ApmServer.getTransaction(0, 1000);
+            JsonNode transaction = ApmServer.getAndRemoveTransaction(0, 1000);
             assertEquals("GET /nothing", transaction.get("name").asText());
             assertEquals(0, ApmServer.getTransactionCount());
         }
