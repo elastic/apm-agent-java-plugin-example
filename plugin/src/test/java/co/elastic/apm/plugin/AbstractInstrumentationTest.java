@@ -24,7 +24,8 @@ public class AbstractInstrumentationTest {
         setProperty("elastic.apm.server_url", "http://localhost:"+mockApmServerPort);
         setProperty("elastic.apm.plugins_dir", "target"); //to load the plugin
         setProperty("elastic.apm.enable_experimental_instrumentations", "true"); //need for Otel in 1.30
-        setProperty("elastic.apm.api_request_size", "100b"); //flush quickly
+        setProperty("elastic.apm.api_request_size", "100b"); //flush quickly - inadvisably short outside tests
+        setProperty("elastic.apm.report_sync", "true"); //DON'T USE EXCEPT IN TEST!!
 
         //Start the agent
         ElasticApmAttacher.attach();
