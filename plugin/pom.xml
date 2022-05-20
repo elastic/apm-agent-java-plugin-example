@@ -2,13 +2,18 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>co.elastic.apm</groupId>
   <artifactId>plugin</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.2-SNAPSHOT</version>
+
+  <properties>
+    <version.elastic-agent>1.31.0</version.elastic-agent>
+  </properties>
+
   <dependencies>
     <!-- The Elastic APM Java Agent Plugin SDK is needed to add instrumentation -->
     <dependency>
         <groupId>co.elastic.apm</groupId>
         <artifactId>apm-agent-plugin-sdk</artifactId>
-        <version>1.30.1</version>
+        <version>${version.elastic-agent}</version>
         <scope>provided</scope>
     </dependency>
 	<!-- OpenTelemetry provides the standard API used for adding spans, etc -->
@@ -28,14 +33,14 @@
     <dependency>
       <groupId>co.elastic.apm</groupId>
       <artifactId>apm-agent-attach</artifactId>
-      <version>1.30.1</version>
+      <version>${version.elastic-agent}</version>
       <scope>test</scope>
     </dependency>
     <!-- The neighbouring application project is what is being tested -->
     <dependency>
       <groupId>co.elastic.apm</groupId>
       <artifactId>application</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.0.2-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <!-- The mock APM server provides JSON structured information -->

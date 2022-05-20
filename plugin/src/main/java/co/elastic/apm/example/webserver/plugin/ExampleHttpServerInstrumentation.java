@@ -215,14 +215,22 @@ public class ExampleHttpServerInstrumentation extends ElasticApmInstrumentation 
          */
         @Advice.OnMethodExit(suppress = Throwable.class, onThrowable = Throwable.class, inline = false)
         public static void onExitHandle(@Advice.Thrown Throwable thrown, @Advice.Enter Object scopeObject) {
-            Span span = Span.current();
-            span.end();
-            if (thrown != null) {
-                span.setStatus(StatusCode.ERROR);
-                span.recordException(thrown);
+            //Use a defensive implementation - nothing
+            //that might fail will prevent anything else
+            try {
+                Span span = Span.current();
+                try {
+                    if (thrown != null) {
+                        span.setStatus(StatusCode.ERROR);
+                        span.recordException(thrown);
+                    }
+                } finally {
+                    span.end();
+                }
+            } finally{
+                Scope scope = (Scope) scopeObject;
+                scope.close();
             }
-            Scope scope = (Scope) scopeObject;
-            scope.close();
         }
     }
 }
