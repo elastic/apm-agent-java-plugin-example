@@ -35,11 +35,27 @@ The plugin consists of a [single file](blob/main/plugin/src/main/java/co/elastic
 
 The full project can be built by cloning to your local system, changing to the root directory, and running `mvn clean install`.
 
+Prerequisites: git, maven and JDK 11+ installed
+
+```aidl
+git clone https://github.com/elastic/apm-agent-java-plugin-example.git
+cd apm-agent-java-plugin-example
+mvn clean install
+```
+
 Each sub-project can also be separately built the same way (changing to the sub-project root directory and running `mvn clean install`).
 
 ## Running
 
 You need an Elastic APM Java Agent jar (the latest version is recommended, but at least version 1.31.0). Additionally an Elastic APM server is recommended, though not required (communications to the server will be dropped if it's unavailable).
+
+The full set of example run instructions below are also available as a batch script in the project root directory, in file runExamples.bash/runExamples.bat
+
+The latest agent version can be found in [Maven](https://search.maven.org/search?q=g:co.elastic.apm%20AND%20a:elastic-apm-agent). You can download using any of the standard download mechanisms, eg
+
+```aidl
+wget https://repo1.maven.org/maven2/co/elastic/apm/elastic-apm-agent/1.32.0/elastic-apm-agent-1.32.0.jar
+```
 
 ### Standalone Application, no agent, no plugin
 
