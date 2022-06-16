@@ -5,7 +5,7 @@ Example of instrumentation which plugs in to the Elastic Java Agent and instrume
 
 The [Elastic APM Java Agent](https://github.com/elastic/apm-agent-java/) is a Java agent that automatically measures the performance of your application and tracks errors. [Full documentation is available](https://www.elastic.co/guide/en/apm/agent/java/current/intro.html).
 
-This project provides a detailed example of using the Elastic APM Java Plugin API to add custom instrumentation in to the agent, which the agent will automatically apply.
+This project provides a detailed example of using the Elastic APM Java Plugin API to add custom instrumentation in to the agent, which the agent will automatically apply without the need for users to touch the target application's code.
 
 Detailed articles on [creating the instrumentation](https://www.elastic.co/blog/create-your-own-instrumentation-with-the-java-agent-plugin) and on [regression testing it](https://www.elastic.co/blog/create-your-own-instrumentation-with-the-java-agent-plugin) are available
 
