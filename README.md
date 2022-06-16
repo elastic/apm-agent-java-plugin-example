@@ -20,7 +20,7 @@ This project has two sub-projects
 
 The application consists of a webserver and a client that executes some requests against the webserver. A [webserver interface](blob/main/application/src/main/java/co/elastic/apm/example/webserver/ExampleHttpServer.java) and two implementations are provided:
 
-* [ExampleAlreadyInstrumentedHttpServer](blob/main/application/src/main/java/co/elastic/apm/example/webserver/ExampleAlreadyInstrumentedHttpServer.java) uses the com.sun.net.httpserver.HttpServer that is a standard part of the JDK to implement the webserver interface; the Elastic APM Java Agent already automatically instruments this technology, so this implementation is provided as a reference for checking logging and output
+* [ExampleAlreadyInstrumentedHttpServer](blob/main/application/src/main/java/co/elastic/apm/example/webserver/ExampleAlreadyInstrumentedHttpServer.java) uses the `com.sun.net.httpserver.HttpServer` that is a standard part of the JDK to implement the webserver interface; the Elastic APM Java Agent already automatically instruments this technology, so this implementation is provided as a reference for checking logging and output
 * [ExampleBasicHttpServer](blob/main/application/src/main/java/co/elastic/apm/example/webserver/ExampleBasicHttpServer.java) implements a very restricted custom webserver, to provide a target for the custom instrumentation
 
 The [ExampleClient](blob/main/application/src/main/java/co/elastic/apm/example/webserver/ExampleClient.java) provides an application entry point that, when run, will start the selected webserver (chosen by setting the property `elastic.apm.service_name`), and send it some requests before terminating.
