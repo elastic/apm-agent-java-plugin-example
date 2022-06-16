@@ -18,18 +18,18 @@ This project has two sub-projects
 
 ## Application sub-project
 
-The application consists of a webserver and a client that executes some requests against the webserver. A [webserver interface](blob/main/application/src/main/java/co/elastic/apm/example/webserver/ExampleHttpServer.java) and two implementations are provided:
+The application consists of a webserver and a client that executes some requests against the webserver. A [webserver interface](application/src/main/java/co/elastic/apm/example/webserver/ExampleHttpServer.java) and two implementations are provided:
 
-* [ExampleAlreadyInstrumentedHttpServer](blob/main/application/src/main/java/co/elastic/apm/example/webserver/ExampleAlreadyInstrumentedHttpServer.java) uses the `com.sun.net.httpserver.HttpServer` that is a standard part of the JDK to implement the webserver interface; the Elastic APM Java Agent already automatically instruments this technology, so this implementation is provided as a reference for checking logging and output
-* [ExampleBasicHttpServer](blob/main/application/src/main/java/co/elastic/apm/example/webserver/ExampleBasicHttpServer.java) implements a very restricted custom webserver, to provide a target for the custom instrumentation
+* [ExampleAlreadyInstrumentedHttpServer](application/src/main/java/co/elastic/apm/example/webserver/ExampleAlreadyInstrumentedHttpServer.java) uses the `com.sun.net.httpserver.HttpServer` that is a standard part of the JDK to implement the webserver interface; the Elastic APM Java Agent already automatically instruments this technology, so this implementation is provided as a reference for checking logging and output
+* [ExampleBasicHttpServer](application/src/main/java/co/elastic/apm/example/webserver/ExampleBasicHttpServer.java) implements a very restricted custom webserver, to provide a target for the custom instrumentation
 
-The [ExampleClient](blob/main/application/src/main/java/co/elastic/apm/example/webserver/ExampleClient.java) provides an application entry point that, when run, will start the selected webserver (chosen by setting the property `elastic.apm.service_name`), and send it some requests before terminating.
+The [ExampleClient](application/src/main/java/co/elastic/apm/example/webserver/ExampleClient.java) provides an application entry point that, when run, will start the selected webserver (chosen by setting the property `elastic.apm.service_name`), and send it some requests before terminating.
 
 Note the application implementation is deliberately simple (eg System.out instead of a logging framework) to keep it as easy to understand as possible.
 
 ## Plugin sub-project
 
-The plugin consists of a [single file](blob/main/plugin/src/main/java/co/elastic/apm/example/webserver/plugin/ExampleHttpServerInstrumentation.java) holding the custom instrumentation, several classes for regression testing, and a pom that builds the correct plugin jar. The details of the plugin project are explained in the articles [creating the instrumentation](https://www.elastic.co/blog/create-your-own-instrumentation-with-the-java-agent-plugin) and [regression testing it](https://www.elastic.co/blog/create-your-own-instrumentation-with-the-java-agent-plugin).
+The plugin consists of a [single file](plugin/src/main/java/co/elastic/apm/example/webserver/plugin/ExampleHttpServerInstrumentation.java) holding the custom instrumentation, several classes for regression testing, and a pom that builds the correct plugin jar. The details of the plugin project are explained in the articles [creating the instrumentation](https://www.elastic.co/blog/create-your-own-instrumentation-with-the-java-agent-plugin) and [regression testing it](https://www.elastic.co/blog/create-your-own-instrumentation-with-the-java-agent-plugin).
 
 ## Building
 
