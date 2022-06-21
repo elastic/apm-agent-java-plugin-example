@@ -39,7 +39,7 @@ public class ExampleHttpServerInstrumentationIT extends AbstractInstrumentationT
         //Useful to set log level to debug
         setProperty("elastic.apm.log_level", "DEBUG");
         //Setting this makes the agent startup faster
-        String instrumentations = "opentelemetry, "+String.join(", ",
+        String instrumentations = "micrometer, opentelemetry, "+String.join(", ",
                 new ExampleHttpServerInstrumentation().getInstrumentationGroupNames());
         setProperty("elastic.apm.enable_instrumentations", instrumentations);
     }
