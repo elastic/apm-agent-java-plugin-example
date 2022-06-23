@@ -39,7 +39,26 @@ public class ExampleMetricsInstrumentation extends ElasticApmInstrumentation {
         @Advice.OnMethodEnter(suppress = Throwable.class, inline = false)
         public static void onEnterHandle() {
             if (!metricWasAdded) {
-                Metrics.addRegistry(new SimpleMeterRegistry());
+                Metrics.addRegistry(new SimpleMeterRegistry(new SimpleConfig() {
+
+                    @Override
+                    public CountingMode mode() {
+                        // to report the delta since the last report
+                        // this makes building dashboards a bit easier
+                        return CountingMode.STEP;
+                    }
+
+                    @Override
+                    public Duration step() {
+                        // the duration should match metrics_interval, which defaults to 30s
+                        return Duration.ofSeconds(30);
+                    }
+
+                    @Override
+                    public String get(String key) {
+                        return null;
+                    }
+                }, Clock.SYSTEM));
                 metricWasAdded = true;
             }
             Metrics.counter("page_counter").increment();
