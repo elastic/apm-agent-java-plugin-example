@@ -88,4 +88,33 @@ public class ExampleHttpServerInstrumentationIT extends AbstractInstrumentationT
         return response.statusCode();
     }
 
+    @Test
+    void testInstrumentationIncrementsThePageCounterMetric() throws IOException, InterruptedException, TimeoutException {
+        assertEquals(200, executeRequest("random"));
+        JsonNode transaction = ApmServer.getAndRemoveTransaction(0, 1000);
+        assertEquals("GET /random", transaction.get("name").asText());
+
+        JsonNode metricset = ApmServer.popMetricset(5000);
+        boolean foundPageCountMetric = false;
+        boolean foundNonZeroPageCountMetric = false;
+        long start = System.currentTimeMillis();
+        //Although we've set the metrics to be sent every second
+        //micrometer itself is not synchronous, so it can take a
+        //while for micrometer to update the metric. So the test
+        //is set to run for up to 50 seconds
+        for(long now = start; metricset != null && now-start < 50000L; now = System.currentTimeMillis()) {
+            if (metricset.get("samples") != null && metricset.get("samples").get("page_counter") != null) {
+                foundPageCountMetric = true;
+                int pageCountValue = metricset.get("samples").get("page_counter").get("value").intValue();
+                if (pageCountValue > 0) {
+                    foundNonZeroPageCountMetric = true;
+                    break;
+                }
+            }
+            metricset = ApmServer.popMetricset(5000);
+        }
+        assertEquals(true, foundPageCountMetric);
+        assertEquals(true, foundNonZeroPageCountMetric);
+    }
+
 }
