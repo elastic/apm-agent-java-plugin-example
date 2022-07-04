@@ -45,6 +45,7 @@ public class MockApmServer {
     private static volatile HttpServer TheServerInstance;
 
     private final List<JsonNode> transactions = new ArrayList<>();
+    private final List<JsonNode> metricsets = new ArrayList<>();
 
     /**
      * A count of the number of transactions received and not yet removed
@@ -98,6 +99,34 @@ public class MockApmServer {
         }
     }
 
+    public JsonNode popMetricset(long timeOutInMillis) throws TimeoutException {
+        //because the agent writes to the server asynchronously,
+        //any metricset created in a client is not here immediately
+        long start = System.currentTimeMillis();
+        long elapsedTime = 0;
+        while (elapsedTime < timeOutInMillis) {
+            synchronized (metricsets) {
+                if (metricsets.size() > 0) {
+                    break;
+                }
+                if (timeOutInMillis-elapsedTime > 0) {
+                    try {
+                        metricsets.wait(timeOutInMillis - elapsedTime);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                elapsedTime = System.currentTimeMillis() - start;
+            }
+        }
+        if (timeOutInMillis-elapsedTime <= 0) {
+            return null;
+        }
+        synchronized (metricsets) {
+            return metricsets.remove(0);
+        }
+    }
+
     /**
      * Start the Mock APM server. Just returns empty JSON structures for every incoming message
      * @return - the port the Mock APM server started on
@@ -114,6 +143,7 @@ public class MockApmServer {
 
         server.start();
         TheServerInstance = server;
+        System.out.println("MockApmServer started on port "+server.getAddress().getPort());
         return server.getAddress().getPort();
     }
 
@@ -135,7 +165,7 @@ public class MockApmServer {
                 while((lengthRead = body.read(buffer)) > 0) {
                     bytes.write(buffer, 0, lengthRead);
                 }
-                reportTransactions(bytes.toString());
+                reportTransactionsAndMetrics(bytes.toString());
                 String response = "{}";
                 t.sendResponseHeaders(200, response.length());
                 OutputStream os = t.getResponseBody();
@@ -146,13 +176,13 @@ public class MockApmServer {
             }
         }
 
-        private void reportTransactions(String json) {
+        private void reportTransactionsAndMetrics(String json) {
             String[] lines = json.split("[\r\n]");
             for (String line: lines) {
-                reportTransaction(line);
+                reportTransactionOrMetric(line);
             }
         }
-        private void reportTransaction(String line) {
+        private void reportTransactionOrMetric(String line) {
             System.out.println("MockApmServer reading JSON objects: "+ line);
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode messageRootNode = null;
@@ -163,6 +193,13 @@ public class MockApmServer {
                     synchronized (transactions) {
                         transactions.add(transactionNode);
                         transactions.notify();
+                    }
+                }
+                JsonNode metricsetNode = messageRootNode.get("metricset");
+                if (metricsetNode != null) {
+                    synchronized (metricsets) {
+                        metricsets.add(metricsetNode);
+                        metricsets.notify();
                     }
                 }
             } catch (JsonProcessingException e) {

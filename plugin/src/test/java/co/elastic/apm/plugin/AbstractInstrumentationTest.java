@@ -26,6 +26,7 @@ public class AbstractInstrumentationTest {
         setProperty("elastic.apm.enable_experimental_instrumentations", "true"); //need for Otel in 1.30
         setProperty("elastic.apm.api_request_size", "100b"); //flush quickly - inadvisably short outside tests
         setProperty("elastic.apm.report_sync", "true"); //DON'T USE EXCEPT IN TEST!!
+        setProperty("elastic.apm.metrics_interval", "1s"); //flush metrics quickly - inadvisably short outside tests
 
         //Start the agent
         ElasticApmAttacher.attach();
