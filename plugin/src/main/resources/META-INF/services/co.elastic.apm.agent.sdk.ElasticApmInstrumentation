@@ -1,2 +1,3 @@
 co.elastic.apm.example.webserver.plugin.ExampleHttpServerInstrumentation
 co.elastic.apm.example.webserver.plugin.ExampleMetricsInstrumentation
+co.elastic.apm.example.webserver.plugin.ExampleMicrometerMetricsInstrumentation

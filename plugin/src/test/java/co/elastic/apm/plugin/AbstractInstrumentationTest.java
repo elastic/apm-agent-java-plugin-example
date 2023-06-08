@@ -1,6 +1,7 @@
 package co.elastic.apm.plugin;
 
 import co.elastic.apm.attach.ElasticApmAttacher;
+import co.elastic.apm.example.webserver.plugin.ExampleHttpServerInstrumentation;
 import co.elastic.apm.mock.MockApmServer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -27,6 +28,12 @@ public class AbstractInstrumentationTest {
         setProperty("elastic.apm.api_request_size", "100b"); //flush quickly - inadvisably short outside tests
         setProperty("elastic.apm.report_sync", "true"); //DON'T USE EXCEPT IN TEST!!
         setProperty("elastic.apm.metrics_interval", "1s"); //flush metrics quickly - inadvisably short outside tests
+
+        setProperty("elastic.apm.log_level", "DEBUG");
+        //Setting this makes the agent startup faster
+        String instrumentations = "micrometer, opentelemetry, opentelemetry-metrics, "+String.join(", ",
+                new ExampleHttpServerInstrumentation().getInstrumentationGroupNames());
+        setProperty("elastic.apm.enable_instrumentations", instrumentations);
 
         //Start the agent
         ElasticApmAttacher.attach();

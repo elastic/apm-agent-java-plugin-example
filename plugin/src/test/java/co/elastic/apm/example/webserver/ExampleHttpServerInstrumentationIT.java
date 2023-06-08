@@ -29,21 +29,6 @@ public class ExampleHttpServerInstrumentationIT extends AbstractInstrumentationT
     protected static ExampleBasicHttpServer Server;
     protected static HttpClient Client = HttpClient.newHttpClient();
 
-    static {
-        //Need to set properties in a static initializer so that
-        //they are set before the agent is installed (by the superclass)
-
-        //The following properties are useful,
-        //but not necessary, and can be commented out
-
-        //Useful to set log level to debug
-        setProperty("elastic.apm.log_level", "DEBUG");
-        //Setting this makes the agent startup faster
-        String instrumentations = "micrometer, opentelemetry, "+String.join(", ",
-                new ExampleHttpServerInstrumentation().getInstrumentationGroupNames());
-        setProperty("elastic.apm.enable_instrumentations", instrumentations);
-    }
-
     @BeforeAll
     public static void startServer() throws IOException {
         Server = new ExampleBasicHttpServer();
@@ -89,23 +74,30 @@ public class ExampleHttpServerInstrumentationIT extends AbstractInstrumentationT
     }
 
     @Test
-    void testInstrumentationIncrementsThePageCounterMetric() throws IOException, InterruptedException, TimeoutException {
-        assertEquals(200, executeRequest("random"));
+    void testInstrumentationIncrementsTheOtelPageCounterMetric() throws IOException, InterruptedException, TimeoutException {
+        testInstrumentationIncrementsThePageCounterMetrics("page_views", 5000L);
+    }
+
+    @Test
+    void testInstrumentationIncrementsTheMicrometerPageCounterMetric() throws IOException, InterruptedException, TimeoutException {
+        //Although we've set the metrics to be sent every second, micrometer itself is not synchronous,
+        //so it can take a while for micrometer to update the metric. So the test is set to run for up to 50 seconds
+        testInstrumentationIncrementsThePageCounterMetrics("page_counter", 50000L);
+    }
+
+    void testInstrumentationIncrementsThePageCounterMetrics(String metricName, long timeoutInMillis) throws IOException, InterruptedException, TimeoutException {
+        assertEquals(200, executeRequest("random_with_"+metricName));
         JsonNode transaction = ApmServer.getAndRemoveTransaction(0, 1000);
-        assertEquals("GET /random", transaction.get("name").asText());
+        assertEquals("GET /random_with_"+metricName, transaction.get("name").asText());
 
         JsonNode metricset = ApmServer.popMetricset(5000);
         boolean foundPageCountMetric = false;
         boolean foundNonZeroPageCountMetric = false;
         long start = System.currentTimeMillis();
-        //Although we've set the metrics to be sent every second
-        //micrometer itself is not synchronous, so it can take a
-        //while for micrometer to update the metric. So the test
-        //is set to run for up to 50 seconds
-        for(long now = start; metricset != null && now-start < 50000L; now = System.currentTimeMillis()) {
-            if (metricset.get("samples") != null && metricset.get("samples").get("page_counter") != null) {
+        for(long now = start; metricset != null && now-start < timeoutInMillis; now = System.currentTimeMillis()) {
+            if (metricset.get("samples") != null && metricset.get("samples").get(metricName) != null) {
                 foundPageCountMetric = true;
-                int pageCountValue = metricset.get("samples").get("page_counter").get("value").intValue();
+                int pageCountValue = metricset.get("samples").get(metricName).get("value").intValue();
                 if (pageCountValue > 0) {
                     foundNonZeroPageCountMetric = true;
                     break;

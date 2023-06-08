@@ -2,10 +2,10 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>co.elastic.apm</groupId>
   <artifactId>plugin</artifactId>
-  <version>0.0.2-SNAPSHOT</version>
+  <version>0.0.3-SNAPSHOT</version>
 
   <properties>
-    <version.elastic-agent>1.31.0</version.elastic-agent>
+    <version.elastic-agent>1.38.0</version.elastic-agent>
   </properties>
 
   <dependencies>
@@ -20,7 +20,7 @@
 	<dependency>
 	    <groupId>io.opentelemetry</groupId>
 	    <artifactId>opentelemetry-api</artifactId>
-	    <version>1.0.0</version>
+	    <version>1.25.0</version>
 	</dependency>
     <dependency>
       <groupId>io.micrometer</groupId>
@@ -51,7 +51,7 @@
     <dependency>
       <groupId>co.elastic.apm</groupId>
       <artifactId>application</artifactId>
-      <version>0.0.2-SNAPSHOT</version>
+      <version>0.0.3-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <!-- The mock APM server provides JSON structured information -->
