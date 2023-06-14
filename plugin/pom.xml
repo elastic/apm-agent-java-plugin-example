@@ -5,7 +5,7 @@
   <version>0.0.3-SNAPSHOT</version>
 
   <properties>
-    <version.elastic-agent>1.38.0</version.elastic-agent>
+    <version.elastic-agent>1.39.0</version.elastic-agent>
   </properties>
 
   <dependencies>
