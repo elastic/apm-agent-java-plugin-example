@@ -54,7 +54,8 @@ public class ExampleMetricsInstrumentation extends ElasticApmInstrumentation {
      */
     public static class AdviceClass {
         /**
-         * At initialization, we register the with the OpenTelemetry registry by
+         * At initialization, we register with the OpenTelemetry registry by
+
          * creating a meter, a page count metric (`page_views`) which will be available
          * in the Elastic APM metrics views.
          *
