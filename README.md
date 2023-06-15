@@ -29,7 +29,7 @@ Note the application implementation is deliberately simple (eg System.out instea
 
 ## Plugin sub-project
 
-The plugin consists of a [single file](plugin/src/main/java/co/elastic/apm/example/webserver/plugin/ExampleHttpServerInstrumentation.java) holding the custom instrumentation, several classes for regression testing, and a pom that builds the correct plugin jar. The details of the plugin project are explained in the articles [creating the instrumentation](https://www.elastic.co/blog/create-your-own-instrumentation-with-the-java-agent-plugin) and [regression testing it](https://www.elastic.co/blog/create-your-own-instrumentation-with-the-java-agent-plugin).
+The plugin consists of [one file](plugin/src/main/java/co/elastic/apm/example/webserver/plugin/ExampleHttpServerInstrumentation.java) holding the custom tracing instrumentation, [one file](plugin/src/main/java/co/elastic/apm/example/webserver/plugin/ExampleMetricsInstrumentation.java) holding custom metrics instrumentation, several classes for regression testing, and a pom that builds the correct plugin jar. The details of the plugin project are explained in the articles [creating the instrumentation](https://www.elastic.co/blog/create-your-own-instrumentation-with-the-java-agent-plugin) and [regression testing it](https://www.elastic.co/blog/create-your-own-instrumentation-with-the-java-agent-plugin).
 
 ## Building
 
@@ -47,7 +47,7 @@ Each sub-project can also be separately built the same way (changing to the sub-
 
 ## Running
 
-You need an Elastic APM Java Agent jar (the latest version is recommended, but at least version 1.31.0). Additionally an Elastic APM server is recommended, though not required (communications to the server will be dropped if it's unavailable).
+You need an Elastic APM Java Agent jar (the latest version is recommended, but at least version 1.31.0 to instrument traces and at least 1.39.0 to instrument metrics). Additionally an Elastic APM server is recommended, though not required (communications to the server will be dropped if it's unavailable).
 
 The full set of example run instructions below are also available as a batch script in the project root directory, in file runExamples.bash/runExamples.bat
 
