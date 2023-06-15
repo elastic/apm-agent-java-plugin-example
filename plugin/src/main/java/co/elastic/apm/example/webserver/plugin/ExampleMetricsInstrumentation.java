@@ -47,7 +47,8 @@ public class ExampleMetricsInstrumentation extends ElasticApmInstrumentation {
      * it needs to be applied, ie when the above matchers ({@code getTypeMatcher}
      * and {@code getMethodMatcher}) have been matched
      *
-     * The ELastic APM Java agent provides the OpenTelemetry metrics capability -
+     * The Elastic APM Java agent provides the OpenTelemetry metrics capability -
+
      * the agent fully implements the OpenTelemetry metrics framework. See
      * https://www.elastic.co/guide/en/apm/agent/java/master/opentelemetry-bridge.html#otel-metrics
      */
